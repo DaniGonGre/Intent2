@@ -1,10 +1,15 @@
 package com.example.intent2
 
+import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,12 +24,31 @@ class MainActivity : AppCompatActivity() {
         val bCamara = findViewById<Button>(R.id.bCamara)
 
         bCamara.setOnClickListener {
-            // Crea un Intent para iniciar la segunda actividad
-            val intent = Intent(this, MainActivity2::class.java)
+            // Crea un Intent para iniciar la actividad
 
-            startActivityForResult(intent, RESULTADO_UNO)
-            startActivityForResult(intent, RESULTADO_DOS)
+            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+                takePictureIntent.resolveActivity(packageManager)?.also {
+                    startActivityForResult(takePictureIntent, RESULTADO_UNO)
+                }
+            }
+
+            //startActivityForResult(intent, RESULTADO_DOS)
 
         }
     }
+
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        val imagen = findViewById<ImageView>(R.id.imagen)
+
+        if (requestCode == RESULTADO_UNO && resultCode == RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            imagen.setImageBitmap(imageBitmap)
+        }
+
+
+        }
 }
