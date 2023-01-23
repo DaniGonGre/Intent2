@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,19 +23,35 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val bCamara = findViewById<Button>(R.id.bCamara)
+        val bAleatorio = findViewById<Button>(R.id.bAleatorio)
 
         bCamara.setOnClickListener {
             // Crea un Intent para iniciar la actividad
-
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                 takePictureIntent.resolveActivity(packageManager)?.also {
                     startActivityForResult(takePictureIntent, RESULTADO_UNO)
                 }
             }
 
-            //startActivityForResult(intent, RESULTADO_DOS)
-
         }
+
+        bAleatorio.setOnClickListener {
+
+            // Crea un Intent para la segunda  actividad
+            val intent = Intent(this, MainActivity2::class.java)
+
+            val random = Random()
+            val nRandom1 = random.nextInt(10) + 1
+            val nRandom2 = random.nextInt(10) + 1
+
+            // Añade números al Intent
+            intent.putExtra("numero1", nRandom1)
+            intent.putExtra("numero2", nRandom2)
+
+            // Inicia la tercera actividad
+            startActivityForResult(intent, RESULTADO_DOS)
+        }
+
     }
 
 
@@ -43,12 +60,19 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         val imagen = findViewById<ImageView>(R.id.imagen)
+        val resultado = findViewById<TextView>(R.id.texto)
 
         if (requestCode == RESULTADO_UNO && resultCode == RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
             imagen.setImageBitmap(imageBitmap)
         }
 
+        if (requestCode == RESULTADO_DOS && resultCode == RESULT_OK) {
+            resultado.text = data?.getStringExtra("suma")
+        }
+
+
 
         }
-}
+    }
+
